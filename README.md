@@ -18,7 +18,7 @@ Using openGL renderer by zed sdk samples, camera streaming at 720p@60fps
 
 does not work well with stream ... 
 
-| Conversion      | Voxl Downsample     | Uniform Downsample      |
+| Conversion      | Voxel Downsample     | Uniform Downsample      |
 |---------------|---------------|---------------|
 | ![cpu](./img/cpu.gif) | ![vds](./img/cpu_voxel_downsample.gif) | ![uds](./img/cpu_uniform_downsample.gif) |
 
