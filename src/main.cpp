@@ -41,8 +41,8 @@ int main(int argc, char **argv)
         return false;
     }
 
-    // Start camera threads after creating a shared_ptr to the GLViewer
-    std::unique_ptr<GLViewer> ptr_viewer = std::make_unique<GLViewer>();
+    // Creating the GLViewer
+    auto ptr_viewer = std::make_unique<GLViewer>();
     ptr_viewer->init(argc, argv);
     std::cout << "Initialized OpenGL Viewer!";
 
