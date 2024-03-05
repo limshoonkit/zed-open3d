@@ -71,17 +71,27 @@ int main(int argc, char **argv)
 
             sl::Mat sl_pc;
 
-            // cpu
+            // cpu ---------------------------------------------------------------------------------------------
             // auto state_pc = ptr_zed->retrieveMeasure(sl_pc, sl::MEASURE::XYZBGRA, sl::MEM::CPU, low_res);
             // auto o3d_pc = slMat_to_Open3D(sl_pc);
+            
+            // 1. No process
             // auto updated = Open3D_to_slMat(o3d_pc);
+            
+            // 2. Voxel Downsample
+            // auto v_downsampled_pcd = o3d_pc.VoxelDownSample(0.05).get();
+            // auto updated = Open3D_to_slMat(*v_downsampled_pcd);
+            
+            // 3. Uniform Downsample
+            // auto u_downsampled_pcd = o3d_pc.UniformDownSample(50);
+            // auto updated = Open3D_to_slMat(*u_downsampled_pcd);
+            // -------------------------------------------------------------------------------------------------
 
-            // gpu
+            // gpu ---------------------------------------------------------------------------------------------
             auto state_pc = ptr_zed->retrieveMeasure(sl_pc, sl::MEASURE::XYZBGRA, sl::MEM::CPU, low_res);
             auto o3d_pc = slMat_to_Open3D_gpu(sl_pc);
             auto updated = Open3D_to_slMat_gpu(o3d_pc);
-            // auto v_downsampled_pcd = o3d_pc.VoxelDownSample(0.1);
-            // auto updated = Open3D_to_slMat_gpu(v_downsampled_pcd);
+            //--------------------------------------------------------------------------------------------------
 
             ptr_viewer->updatePC(id, updated);
         }

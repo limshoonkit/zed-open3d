@@ -65,7 +65,6 @@ inline open3d::t::geometry::PointCloud slMat_to_Open3D_gpu(const sl::Mat &input)
             auto colorPtr = reinterpret_cast<uchar *>(&subPtr->w);
             float rgb[3];
             std::copy(colorPtr, colorPtr + 3, rgb);
-
             // Normalize the RGB values
             std::transform(std::begin(rgb), std::end(rgb), std::begin(rgb), [](float c)
                            { return c * RGB_SCALE_FACTOR; });
@@ -95,17 +94,14 @@ inline sl::Mat Open3D_to_slMat(const open3d::geometry::PointCloud &pcd)
 
     for (int i = 0; i < num_points; ++i)
     {
-        // Copy point coordinates
         const auto &point = pcd.points_[i];
-        // Copy color values
         const auto &color = pcd.colors_[i];
         uchar rgba[4];
         rgba[0] = static_cast<uchar>(color.x() * 255.0f);
         rgba[1] = static_cast<uchar>(color.y() * 255.0f);
         rgba[2] = static_cast<uchar>(color.z() * 255.0f);
-        rgba[3] = static_cast<uchar>(1.0f * 255.0f); // alpha
+        rgba[3] = static_cast<uchar>(255.0f); // alpha (fully opaque)
         float packed_color = *reinterpret_cast<float *>(rgba);
-
         mat.setValue<sl::float4>(i, 0, sl::float4(point.x(), point.y(), point.z(), packed_color));
     }
     return mat;
@@ -114,8 +110,8 @@ inline sl::Mat Open3D_to_slMat(const open3d::geometry::PointCloud &pcd)
 inline sl::Mat Open3D_to_slMat_gpu(const open3d::t::geometry::PointCloud &pcd)
 {
     auto pcd_cpu = pcd.To(open3d::core::Device("CPU:0"));
-    auto pts = pcd.GetPointPositions().ToFlatVector<float>();
-    auto clr = pcd.GetPointColors().ToFlatVector<float>();
+    auto pts = pcd_cpu.GetPointPositions().ToFlatVector<float>();
+    auto clr = pcd_cpu.GetPointColors().ToFlatVector<float>();
     const int ptsCount = static_cast<int>(pts.size() / 3);
 
     sl::Mat mat(ptsCount, 1, sl::MAT_TYPE::F32_C4);
@@ -125,7 +121,7 @@ inline sl::Mat Open3D_to_slMat_gpu(const open3d::t::geometry::PointCloud &pcd)
         rgba[0] = static_cast<uchar>(clr[i] * 255.0f);
         rgba[1] = static_cast<uchar>(clr[i + 1] * 255.0f);
         rgba[2] = static_cast<uchar>(clr[i + 2] * 255.0f);
-        rgba[3] = static_cast<uchar>(1.0f * 255.0f); // alpha
+        rgba[3] = static_cast<uchar>(255.0f); // alpha (fully opaque)
         float packed_color = *reinterpret_cast<float *>(rgba);
         mat.setValue<sl::float4>(i / 3, 0, sl::float4(pts[i], pts[i + 1], pts[i + 2], packed_color));
     }
